@@ -1,7 +1,4 @@
 .site-header {
-    --color-primary: #386EE0;
-    --color-primary-focus: #1D4ED8;
-    --color-primary-light: #4a90e2;
     --font-primary: 'Open Sans', Arial, sans-serif;
     --z-header: 1000;
     --color-bg-translucent: rgba(249, 251, 253, 0.81);
@@ -28,6 +25,18 @@
     background-color: var(--color-bg-translucent);
     backdrop-filter: blur(10px);
     transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.site-header.lean {
+    --color-primary: #386EE0;
+    --color-primary-focus: #1D4ED8;
+    --color-primary-light: #4a90e2;
+}
+
+.site-header.mathlib {
+    --color-primary: #22C55E;
+    --color-primary-focus: #16A34A;
+    --color-primary-light: #4ADE80;
 }
 
 @media (prefers-color-scheme: dark) {
