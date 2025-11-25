@@ -196,7 +196,7 @@ const App: React.FC = () => {
             <a className="nav-link" href="https://leanprover.github.io/lean4/doc/" target="_blank">
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} /> Lean documentation
             </a>
-            <a className="nav-link" href="https://github.com/hhu-adam/lean4web" target="_blank">
+            <a className="nav-link" href="https://github.com/leanprover-community/lean4web" target="_blank">
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} /> GitHub
             </a>
             <div className="submenu" ref={submenuRef}>
