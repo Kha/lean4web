@@ -5,4 +5,3 @@ cd $(dirname $0)
 
 lake update -R
 lake build
-lake build Batteries

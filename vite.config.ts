@@ -63,6 +63,9 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
       },
+      '/verso': {
+        target: 'http://localhost:8934',
+      }
     }
   },
   resolve: {

@@ -17,6 +17,7 @@ import { PreferencesContext } from './Popups/Settings'
 import { Entries } from './utils/Entries'
 import { fixedEncodeURIComponent, formatArgs, lookupUrl, parseArgs } from './utils/UrlParsing'
 import { useWindowDimensions } from './utils/WindowWidth'
+import TabView from './TabView';
 
 // CSS
 import './css/App.css'
@@ -429,14 +430,11 @@ function App() {
           }
           <div ref={editorRef} className={`codeview${codeMirror ? ' hidden' : ''}`} />
         </div>
-        <div ref={infoviewRef} className="vscode-light infoview"
-          style={preferences.mobile ? {width : '100%'} : {height: '100%'}} >
-            <p className={`editor-support-warning${codeMirror ? '' : ' hidden'}`} >
-              You are in the plain text editor<br /><br />
-              Go back to the Monaco Editor (click <FontAwesomeIcon icon={faCode}/>)
-              for the infoview to update!
-            </p>
-        </div>
+        <TabView
+          infoviewRef={infoviewRef}
+          isUsingCodeMirror={codeMirror}
+          isUsingMobile={preferences.mobile}
+          code={code} />
       </Split>
     </div>
   </PreferencesContext.Provider>
