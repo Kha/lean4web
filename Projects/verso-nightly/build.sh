@@ -5,4 +5,4 @@ cd $(dirname $0)
 curl -L https://raw.githubusercontent.com/leanprover/verso/nightly-testing/lean-toolchain -o lean-toolchain
 lake update -R
 lake build
-lake exe mkdoc
+lake exe mkdoc --output /dev/null

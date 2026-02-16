@@ -19,6 +19,8 @@ cypress/videos
 
 _out
 
+verso-server/*.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

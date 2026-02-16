@@ -2,14 +2,11 @@ import express from "express";
 import { z } from "zod";
 import { mkdir, mkdtemp } from "node:fs/promises";
 import { join } from "node:path";
-import { tmpdir } from "node:os";
 import { randomUUID } from "node:crypto";
-import { compileVerso } from "./exec.ts";
+import { compileVerso, OUTPUT_ROOT_DIR } from "./exec.ts";
 
 export const app = express();
 app.use(express.json());
-
-const OUTPUT_ROOT_DIR = await mkdtemp(join(tmpdir(), "verso-output-"));
 
 const zBuildRequest = z.object({
   projectId: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9.-]*$/),
@@ -36,7 +33,10 @@ app.post("/verso/api/singlepage", async (req, res) => {
     const uniqueDirName = randomUUID();
     const resultDir = join(OUTPUT_ROOT_DIR, uniqueDirName);
     mkdir(resultDir);
-    const subprocess = await compileVerso(body.data.projectId, body.data.fileContents, resultDir);
+    const [resultPath, subprocess] = await compileVerso(
+      body.data.projectId,
+      body.data.fileContents,
+    );
 
     subprocess.stdout.on("data", (data) => {
       send({ stream: "stdout", contents: `${data}` });
@@ -53,7 +53,7 @@ app.post("/verso/api/singlepage", async (req, res) => {
     subprocess.on("close", (data) => {
       if (finished) return;
       if (data === 0) {
-        send({ success: true, href: `/verso/view/${uniqueDirName}/html-single` });
+        send({ success: true, href: `/verso/view/${resultPath}/html-single` });
       } else {
         send({ success: false, result: `process returned non-zero exit code ${data}` });
       }
@@ -62,4 +62,5 @@ app.post("/verso/api/singlepage", async (req, res) => {
   }
 });
 
+console.log(`Serving static files from ${OUTPUT_ROOT_DIR}`)
 app.use("/verso/view", express.static(OUTPUT_ROOT_DIR));

@@ -8,6 +8,7 @@
   },
   "files": [
     "client/dist",
+    "verso-server",
     "lsp-server"
   ],
   "scripts": {
@@ -15,9 +16,10 @@
     "start:lsp-server": "cd lsp-server && NODE_ENV=development nodemon ./index.mjs",
     "start:client": "NODE_ENV=development vite --host",
     "start:verso-server": "NODE_ENV=development nodemon ./verso-server/server.ts",
-    "build": "npm run build:projects && npm run build:client",
+    "build": "npm run build:projects && npm run build:client && npm run build:verso-server",
     "build:projects": "Projects/build.sh",
     "build:client": "tsc -b && NODE_ENV=production vite build",
+    "build:verso-server": "cd verso-server && tsc",
     "production": "NODE_ENV=production node lsp-server/index.mjs",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
