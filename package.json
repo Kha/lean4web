@@ -11,9 +11,10 @@
     "lsp-server"
   ],
   "scripts": {
-    "start": "concurrently -n lsp-server,client -c blue,green \"npm run start:lsp-server\" \"npm run start:client\"",
+    "start": "concurrently -n lsp-server,client,verso-server -c \"#619fff,#4db556,#d381e5\" \"npm run start:lsp-server\" \"npm run start:client\" \"npm run start:verso-server\"",
     "start:lsp-server": "cd lsp-server && NODE_ENV=development nodemon ./index.mjs",
     "start:client": "NODE_ENV=development vite --host",
+    "start:verso-server": "NODE_ENV=development nodemon ./verso-server/server.ts",
     "build": "npm run build:projects && npm run build:client",
     "build:projects": "Projects/build.sh",
     "build:client": "tsc -b && NODE_ENV=production vite build",
@@ -22,11 +23,11 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test:dev:bare": "wait-on \"http://localhost:8080\" \"http://localhost:3000\" && cypress run",
-    "test:dev": "concurrently -k -s first -n lsp-server,client,cypress -c blue,green,cyan \"npm run start:lsp-server\" \"npm run start:client\" \"npm run test:dev:bare\"",
+    "test:dev": "concurrently -k -s first -n lsp-server,client,cypress -c \"#619fff,#4db556,#d381e5,#91ab07\" \"npm run start:lsp-server\" \"npm run start:client\" \"npm run test:dev:bare\"",
     "test:prod:bare": "wait-on \"http://localhost:3000\" && cypress run",
-    "test:prod": "concurrently -k -s first -n lsp-server,cypress -c blue,cyan \"npm run build && PORT=3000 npm run production\" \"npm run test:prod:bare\"",
+    "test:prod": "concurrently -k -s first -n lsp-server,cypress -c #619fff,#4db556,#d381e5 \"npm run build && PORT=3000 npm run production\" \"npm run test:prod:bare\"",
     "test:prod:windows:bare": "wait-on \"http://localhost:3000\" && CYPRESS_USER_AGENT_OS=\"Windows NT 10.0; Win64; x64\" cypress run --browser chromium",
-    "test:prod:windows": "concurrently -k -s first -n lsp-server,cypress -c blue,cyan \"npm run build && PORT=3000 npm run production\" \"npm run test:prod:windows:bare\"",
+    "test:prod:windows": "concurrently -k -s first -n lsp-server,cypress -c \"#619fff,#4db556,#d381e5\" \"npm run build && PORT=3000 npm run production\" \"npm run test:prod:windows:bare\"",
     "test": "npm run test:dev"
   },
   "dependencies": {
@@ -56,6 +57,7 @@
   },
   "devDependencies": {
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.3",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.13.9",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -63,6 +65,8 @@
     "cypress": "^13.17.0",
     "cypress-iframe": "^1.0.1",
     "cypress-real-events": "^1.14.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
     "vite-plugin-node-polyfills": "0.23.0",
@@ -70,7 +74,7 @@
     "vite-plugin-svgr": "^4.3.0",
     "wait-on": "^8.0.2"
   },
-  "engines" : {
-    "node" : ">=22.0.0"
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

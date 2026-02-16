@@ -17,6 +17,8 @@ cypress/videos
 
 **/.lake
 
+_out
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
