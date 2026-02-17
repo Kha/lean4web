@@ -41,10 +41,14 @@ app.post("/verso/api/singlepage", async (req, res) => {
     );
 
     subprocess.stdout.on("data", (data) => {
-      send({ stream: "stdout", contents: `${data}` });
+      for (const line of `${data}`.split("\n")) {
+        send({ stream: "stdout", contents: line });
+      }
     });
     subprocess.stderr.on("data", (data) => {
-      send({ stream: "stderr", contents: `${data}` });
+      for (const line of `${data}`.split("\n")) {
+        send({ stream: "stderr", contents: line });
+      }
     });
     let finished = false;
     subprocess.on("error", (data) => {
@@ -64,5 +68,5 @@ app.post("/verso/api/singlepage", async (req, res) => {
   }
 });
 
-console.log(`Serving static files from ${OUTPUT_ROOT_DIR}`)
+console.log(`Serving static files from ${OUTPUT_ROOT_DIR}`);
 app.use("/verso/view", express.static(OUTPUT_ROOT_DIR));
