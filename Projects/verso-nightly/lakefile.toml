@@ -1,5 +1,6 @@
 name = "verso-nightly"
 version = "0.1.0"
+moreLeancArgs = ["-O0"]
 defaultTargets = ["TheLeanFile", "mkdoc"]
 
 [[require]]
