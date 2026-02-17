@@ -16,7 +16,7 @@ GIT_PATH=$(dirname $(realpath $(which git)))
 DIRNAME_PATH=$(dirname $(realpath $(which dirname)))
 echo "git path $GIT_PATH"
 echo "dirname path $DIRNAME_PATH"
-eco "lean root $LEAN_ROOT"
+echo "lean root $LEAN_ROOT"
 
 exec bwrap \
     --ro-bind /nix /nix \
