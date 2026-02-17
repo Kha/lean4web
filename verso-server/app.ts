@@ -53,7 +53,7 @@ app.post("/verso/api/singlepage", async (req, res) => {
     let finished = false;
     subprocess.on("error", (data) => {
       finished = true;
-      send({ success: false, result: `${data}` });
+      send({ success: false, result: `${data}`.trim() });
       res.end();
     });
     subprocess.on("close", (data) => {
