@@ -38,7 +38,7 @@ export async function compileVerso(
     ];
   } else {
     const workDirName = randomUUID();
-    const workDir = join(OUTPUT_ROOT_DIR, outputDirName);
+    const workDir = join(OUTPUT_ROOT_DIR, workDirName);
     await mkdir(workDir);
     return [
       join(outputDirName, "_out"),
