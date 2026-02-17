@@ -18,7 +18,9 @@ const lean4webConfig : LeanWebConfig = {
     { "folder": "mathlib-v4.24.0",
       "name": "Mathlib v4.24.0"},
     { "folder": "lean-nightly",
-      "name": "Lean Nightly (without mathlib)"}
+      "name": "Lean Nightly (without mathlib)"},
+    { "folder": "verso-nightly",
+      "name": "Verso Nightly"}
   ],
   "serverCountry": 'Finland',
   "contactDetails": null,
