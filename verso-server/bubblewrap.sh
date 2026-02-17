@@ -12,12 +12,6 @@ shift
 
 LEAN_ROOT="$(cd $INPUT_DIR && lean --print-prefix)"
 
-GIT_PATH=$(dirname $(realpath $(which git)))
-DIRNAME_PATH=$(dirname $(realpath $(which dirname)))
-echo "git path $GIT_PATH"
-echo "dirname path $DIRNAME_PATH"
-eco "lean root $LEAN_ROOT"
-
 exec bwrap \
     --ro-bind /nix /nix \
     --ro-bind /run /run \
