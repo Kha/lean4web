@@ -41,12 +41,12 @@ app.post("/verso/api/singlepage", async (req, res) => {
     );
 
     subprocess.stdout.on("data", (data) => {
-      for (const line of `${data}`.split("\n")) {
+      for (const line of `${data}`.trim().split("\n")) {
         send({ stream: "stdout", contents: line });
       }
     });
     subprocess.stderr.on("data", (data) => {
-      for (const line of `${data}`.split("\n")) {
+      for (const line of `${data}`.trim().split("\n")) {
         send({ stream: "stderr", contents: line });
       }
     });

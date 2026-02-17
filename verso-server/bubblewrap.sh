@@ -14,12 +14,8 @@ shift
 # want the container to know anything about the `/home`, so
 # we'll bind this directory to `/lean`
 LEAN_ROOT="$(cd $INPUT_DIR && lean --print-prefix)"
-
 GIT_PATH=$(dirname $(realpath $(which git)))
 DIRNAME_PATH=$(dirname $(realpath $(which dirname)))
-echo "git path $GIT_PATH"
-echo "dirname path $DIRNAME_PATH"
-echo "lean root $LEAN_ROOT"
 
 exec bwrap \
     --ro-bind /nix /nix \
