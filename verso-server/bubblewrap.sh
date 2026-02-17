@@ -20,15 +20,13 @@ echo "lean root $LEAN_ROOT"
 
 exec bwrap \
     --ro-bind /nix /nix \
-    --ro-bind /run /run \
-    --ro-bind "$LEAN_ROOT" /lean \
     \
     --dev /dev	\
     --tmpfs /tmp \
     --proc /proc \
     \
     --clearenv \
-    --setenv PATH "$PATH" \
+    --setenv PATH "$GIT_PATH:$DIRNAME_PATH" \
     \
     --overlay-src "$INPUT_DIR" \
     --overlay "$OUTPUT_DIR" "$WORK_DIR" /project \
@@ -36,4 +34,4 @@ exec bwrap \
     --unshare-all  \
     --die-with-parent \
     --chdir /project \
-    /lean/bin/lake --old --keep-toolchain exe mkdoc
+    $LEAN_ROOT/bin/lake --old --keep-toolchain exe mkdoc
