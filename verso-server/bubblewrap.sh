@@ -10,6 +10,9 @@ shift
 OUTPUT_DIR="$(realpath "$1")"
 shift
 
+# The LEAN_ROOT will be a path in `/home/$USER/.elan`, and we don't
+# want the container to know anything about the `/home`, so
+# we'll bind this directory to `/lean`
 LEAN_ROOT="$(cd $INPUT_DIR && lean --print-prefix)"
 
 GIT_PATH=$(dirname $(realpath $(which git)))
@@ -20,6 +23,7 @@ echo "lean root $LEAN_ROOT"
 
 exec bwrap \
     --ro-bind /nix /nix \
+    --ro-bind "$LEAN_ROOT" /lean \
     \
     --dev /dev	\
     --tmpfs /tmp \
@@ -34,4 +38,4 @@ exec bwrap \
     --unshare-all  \
     --die-with-parent \
     --chdir /project \
-    $LEAN_ROOT/bin/lake --old --keep-toolchain exe mkdoc
+    /lean/bin/lake --old --keep-toolchain exe mkdoc
