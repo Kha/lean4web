@@ -8,7 +8,6 @@ const IS_DEV = process.env.NODE_ENV === "development";
 const PROJ_ROOT = process.env.PROJ_ROOT || "Projects";
 export const OUTPUT_ROOT_DIR = await mkdtemp(join(tmpdir(), "verso-output-"));
 
-
 /**
  * Spawn a process that, upon success, will put Verso output in the provided
  * directory.
@@ -25,11 +24,11 @@ export async function compileVerso(
   const outputDir = join(OUTPUT_ROOT_DIR, outputDirName);
   await mkdir(outputDir);
   const projDir = join(PROJ_ROOT, projectId);
+  const theLeanFileLoc = join(projDir, "TheLeanFile.lean");
+  await mkdir(join(outputDir, "_out"));
+  await writeFile(theLeanFileLoc, theLeanFileContents);
 
   if (IS_DEV) {
-    const theLeanFileLoc = join(projDir, "TheLeanFile.lean");
-    await mkdir(join(outputDir, "_out"));
-    await writeFile(theLeanFileLoc, theLeanFileContents);
     return [
       join(outputDirName, "_out"),
       spawn("lake", ["--old", "exe", "mkdoc", "--output", join(outputDir, "_out")], {
