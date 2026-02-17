@@ -28,6 +28,8 @@ app.post("/verso/api/singlepage", async (req, res) => {
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Connection", "keep-alive");
+    // https://stackoverflow.com/questions/13672743/eventsource-server-sent-events-through-nginx/33414096#33414096
+    res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
     const uniqueDirName = randomUUID();
