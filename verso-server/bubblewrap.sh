@@ -12,19 +12,27 @@ shift
 
 LEAN_ROOT="$(cd $INPUT_DIR && lean --print-prefix)"
 
-# GIT_PATH=$(dirname $(realpath $(which git)))
-# DIRNAME_PATH=$(dirname $(realpath $(which dirname)))
+GIT_PATH=$(dirname $(realpath $(which git)))
+DIRNAME_PATH=$(dirname $(realpath $(which dirname)))
+echo "git path $GIT_PATH"
+echo "dirname path $DIRNAME_PATH"
+eco "lean root $LEAN_ROOT"
 
 exec bwrap \
     --ro-bind /nix /nix \
+    --ro-bind /run /run \
     --ro-bind "$LEAN_ROOT" /lean \
+    \
     --dev /dev	\
     --tmpfs /tmp \
     --proc /proc \
+    \
     --clearenv \
     --setenv PATH "$PATH" \
-    --overlay-src /home/versobox/test/lean4web/Projects/verso-nightly \
-    --overlay "$PROJECT" "$OVERLAY_WORKDIR" /project \ 
+    \
+    --overlay-src "$INPUT_DIR" \
+    --overlay "$OUTPUT_DIR" "$WORK_DIR" /project \
+    \
     --unshare-all  \
     --die-with-parent \
     --chdir /project \
