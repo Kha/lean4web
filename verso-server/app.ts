@@ -83,6 +83,7 @@ app.post('/verso/api/singlepage', async (req, res) => {
   subprocess.on('close', (data) => {
     if (finished) return
     if (data === 0) {
+      sendProgress({ stream: 'stdout', contents: 'Finished successfully!' })
       res.send({ success: true, href: `/verso/view/${resultPath}/html-single` })
     } else {
       res.send({ success: false, result: `process returned non-zero exit code ${data}` })

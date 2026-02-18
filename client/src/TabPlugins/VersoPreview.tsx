@@ -18,7 +18,7 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
 
   const loadCode = () => {
     setIsLoading(true)
-    setOutput(['connecting...'])
+    setOutput([])
 
     const read = new EventSource('/verso/api/stream')
     read.onerror = (x) => console.log({ error: x })
@@ -28,7 +28,7 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
     }
     read.addEventListener('connect', (event) => {
       const streamId = event.data
-      setOutput((info) => [...info, '...connected'])
+      setOutput((info) => [...info, 'connected!'])
 
       fetch(`/verso/api/singlepage?stream=${streamId}`, {
         method: 'POST',
@@ -70,7 +70,7 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
 
   useEffect(() => {
     scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight
-  }, [output])
+  }, [output, hrefForIframe])
 
   return (
     <div
@@ -78,10 +78,13 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
       aria-labelledby="tab-preview"
       style={currentTab === 'versobox' ? {} : { display: 'none' }}
     >
-      <button disabled={isLoading || previewedCode === code} onClick={loadCode}>
+      <button disabled={isLoading} onClick={loadCode}>
         {isLoading ? 'Loading...' : 'Load'}
       </button>
-      <div ref={scrollerRef} style={{ overflow: 'scroll', width: '100%', height: '4em' }}>
+      <div
+        ref={scrollerRef}
+        style={{ overflow: 'scroll', width: '100%', height: '2.5em', flexGrow: 1 }}
+      >
         <div style={{ width: 'max-content', height: 'max-content' }} className="versostatus">
           {output.join('\n')}
         </div>
