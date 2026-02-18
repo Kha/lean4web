@@ -20,7 +20,13 @@ const lean4webConfig : LeanWebConfig = {
     { "folder": "lean-nightly",
       "name": "Lean Nightly (without mathlib)"},
     { "folder": "verso-nightly",
-      "name": "Verso Nightly"}
+      "name": "Verso Nightly",
+      "plugins": [ "versobox" ],
+      "examples": [
+        { "file": "TheLeanFile/VersoExample.lean",
+          "name": "Verso document"
+        }
+      ]}
   ],
   "serverCountry": 'Finland',
   "contactDetails": null,

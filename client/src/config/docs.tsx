@@ -14,6 +14,11 @@ interface LeanWebExample {
   name: string
 }
 
+/** 
+ * Plugins correspond to tabs in the infoview pane that are controlled by independent
+ * React components */
+type LeanWebPlugin = "versobox"
+
 /** You can add any Lean Project under `lean4web/Projects/` and add it here to use it in the
  * web editor. Note that you will need to manually build your project. Alternatively
  * you can add a file `lean4web/Projects/myProject/build.sh` which contains the instructions
@@ -28,6 +33,8 @@ interface LeanWebProject {
   name: string,
   /** A list of examples which are added under the menu `Examples` */
   examples?: LeanWebExample[]
+  /** Plugins that */
+  plugins?: LeanWebPlugin[]
 }
 
 interface LeanWebConfig {
@@ -47,4 +54,4 @@ interface LeanWebConfig {
 
 }
 
-export type { LeanWebExample, LeanWebProject, LeanWebConfig }
+export type { LeanWebExample, LeanWebProject, LeanWebConfig, LeanWebPlugin }
