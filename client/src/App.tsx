@@ -22,6 +22,7 @@ import { useWindowDimensions } from './utils/WindowWidth'
 import './css/App.css'
 import './css/Editor.css'
 import TabView from './TabView'
+import { LeanWebPlugin } from './config/docs'
 
 /** Returns true if the browser wants dark mode */
 function isBrowserDefaultDark() {
@@ -55,6 +56,7 @@ function App() {
   const [project, setProject] = useState<string>(undefined)
   const [url, setUrl] = useState<string | null>(null)
   const [codeFromUrl, setCodeFromUrl] = useState<string>('')
+  const [tab, setTab] = useState<string | null>(null)
 
   /** Monaco editor requires the code to be set manually. */
   function setContent (code: string) {
@@ -74,6 +76,8 @@ function App() {
       let _code = LZString.decompressFromBase64(args.codez)
       setContent(_code)
     }
+
+    if (args.tab) {setTab(args.tab)}
 
     if (args.url) {setUrl(lookupUrl(decodeURIComponent(args.url)))}
 
@@ -311,25 +315,29 @@ function App() {
     if (!editor) { return }
 
     let _project = (project == 'MathlibDemo' ? null : project)
+    let _tab = (tab == 'info' ? null : tab)
     let args: {
       project: string | null
       url: string | null
       code: string | null
       codez: string | null
+      tab: string | null
     }
     if (code === "") {
       args = {
         project: _project,
         url: null,
         code: null,
-        codez: null
+        codez: null,
+        tab: _tab
       }
     } else if (url != null && code == codeFromUrl) {
       args = {
         project: _project,
         url: encodeURIComponent(url),
         code: null,
-        codez: null
+        codez: null,
+        tab: _tab
       }
     } else if (preferences.compress) {
       // LZ padds the string with trailing `=`, which mess up the argument parsing
@@ -344,7 +352,8 @@ function App() {
           project: _project,
           url: null,
           code: null,
-          codez: compressed
+          codez: compressed,
+          tab: _tab
         }
       // } else {
       //   args = {
@@ -359,11 +368,12 @@ function App() {
         project: _project,
         url: null,
         code: fixedEncodeURIComponent(code),
-        codez: null
+        codez: null,
+        tab: _tab
       }
     }
     history.replaceState(undefined, undefined!, formatArgs(args))
-  }, [editor, project, code, codeFromUrl])
+  }, [editor, project, code, codeFromUrl, tab])
 
   // Disable monaco context menu outside the editor
   useEffect(() => {
@@ -437,6 +447,8 @@ function App() {
             isUsingMobile={preferences.mobile}
             code={code}
             projectId={project}
+            tab={tab}
+            setTab={setTab}
           />
         </div>
       </Split>

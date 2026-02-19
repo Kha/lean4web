@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { LeanWebPlugin } from '../config/docs'
+import { TabId } from '../TabView'
 
 interface VersoPreviewProps {
   currentTab: 'info' | LeanWebPlugin
-  isUsingMobile: boolean
   code: string
   projectId: string
 }
 
-function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPreviewProps) {
+function VersoPreview({ currentTab, code, projectId }: VersoPreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [previewedProject, setPreviewedProject] = useState<null | string>(null)
   const [previewedCode, setPreviewedCode] = useState<null | string>(null)
   const [hrefForIframe, setHrefForIframe] = useState<null | string>(null)
   const [output, setOutput] = useState<string[]>([])
@@ -47,7 +46,6 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
           }
           setHrefForIframe(json.href)
           setPreviewedCode(code)
-          setPreviewedProject(projectId)
         })
         .catch((err) => {
           setIsLoading(false)
@@ -58,9 +56,9 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
     })
   }
 
-  const [lastTab, setLastTab] = useState(currentTab)
+  const [lastTab, setLastTab] = useState<TabId | null>(null)
   useEffect(() => {
-    if (lastTab === currentTab) return
+    if (lastTab && lastTab === currentTab) return
     setLastTab(currentTab)
     if (currentTab !== 'versobox') return
     if (code === previewedCode) return
@@ -89,7 +87,7 @@ function VersoPreview({ currentTab, isUsingMobile, code, projectId }: VersoPrevi
           {output.join('\n')}
         </div>
       </div>
-      {hrefForIframe && <iframe key={previewedCode} src={hrefForIframe} />}
+      {hrefForIframe && <iframe key={hrefForIframe} src={hrefForIframe} />}
     </div>
   )
 }

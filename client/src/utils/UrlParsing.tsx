@@ -4,6 +4,7 @@ interface UrlArgs {
     url: string | null
     code: string | null
     codez: string | null
+    tab: string | null
   }
 
 /** Escape `(` and `)` in URL. */

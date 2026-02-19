@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, unlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -30,6 +30,11 @@ export async function compileVerso(
 
   if (IS_DEV) {
     console.log('DEVELOPMENT WARNING: running lake without bubblewrap!')
+    try {
+      await unlink(join(PROJ_ROOT, projectId, '.lake', 'build', 'lib', 'lean', 'MakeVerso.olean'))
+    } catch (e) {
+      /* ignore */
+    }
     return [
       join(outputDirName, '_out'),
       spawn('lake', ['--keep-toolchain', 'build'], {

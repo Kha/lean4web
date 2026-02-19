@@ -6,7 +6,7 @@ import VersoPreview from './TabPlugins/VersoPreview'
 import { LeanWebPlugin } from './config/docs'
 import lean4webConfig from './config/config'
 
-type TabId = 'info' | LeanWebPlugin
+export type TabId = 'info' | LeanWebPlugin
 interface TabViewButtonProps {
   id: TabId
   currentTab: TabId
@@ -58,20 +58,25 @@ interface TabViewProps {
   isUsingMobile: boolean
   code: string
   projectId: string
+  tab: string
+  setTab: (tab: string) => void
 }
 
-function TabView({ infoviewRef, isUsingCodeMirror, isUsingMobile, code, projectId }: TabViewProps) {
-  const [tabId, setTabId] = useState<TabId>('info')
-
-  useEffect(() => {
-    setTabId('info')
-  }, [projectId])
-
+function TabView({
+  tab,
+  setTab,
+  infoviewRef,
+  isUsingCodeMirror,
+  isUsingMobile,
+  code,
+  projectId,
+}: TabViewProps) {
   const tabs =
     lean4webConfig.projects.filter(({ folder }) => folder === projectId)[0]?.plugins ?? []
   if (tabs.length === 0) {
     return <InfoViewTab isUsingCodeMirror={isUsingCodeMirror} infoviewRef={infoviewRef} />
   }
+  const tabId: TabId = tabs.find((t) => t === tab) ?? 'info'
 
   const tabTitles: { [id in LeanWebPlugin]: string } = {
     versobox: 'Verso view',
@@ -80,11 +85,11 @@ function TabView({ infoviewRef, isUsingCodeMirror, isUsingMobile, code, projectI
   return (
     <div className="view-tabs-container">
       <div role="tablist" className="tab-list">
-        <TabViewButton id="info" currentTab={tabId} setTabId={setTabId}>
+        <TabViewButton id="info" currentTab={tabId} setTabId={setTab}>
           InfoView
         </TabViewButton>
         {tabs.map((id) => (
-          <TabViewButton key={id} id={id} currentTab={tabId} setTabId={setTabId}>
+          <TabViewButton key={id} id={id} currentTab={tabId} setTabId={setTab}>
             {tabTitles[id] ?? id}
           </TabViewButton>
         ))}
@@ -104,12 +109,7 @@ function TabView({ infoviewRef, isUsingCodeMirror, isUsingMobile, code, projectI
           currentTab={tabId}
         />
         {tabs.includes('versobox') && (
-          <VersoPreview
-            projectId={projectId}
-            isUsingMobile={isUsingMobile}
-            currentTab={tabId}
-            code={code}
-          />
+          <VersoPreview projectId={projectId} currentTab={tabId} code={code} />
         )}
       </div>
     </div>
