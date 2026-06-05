@@ -10,6 +10,7 @@ export function NavButton({
   title,
   onClick = () => {},
   href = undefined,
+  disabled = false,
 }: {
   icon?: IconDefinition
   iconElement?: JSX.Element
@@ -17,11 +18,19 @@ export function NavButton({
   title?: string
   onClick?: MouseEventHandler<HTMLAnchorElement>
   href?: string
+  disabled?: boolean
 }) {
   // note: it seems that we can just leave the `target="_blank"` and it has no
   // effect on links without a `href`. If not, add `if (href)` statement here...
   return (
-    <a className="nav-link" title={title} onClick={onClick} href={href!} target="_blank">
+    <a
+      className={`nav-link${disabled ? ' disabled' : ''}`}
+      title={title}
+      aria-disabled={disabled || undefined}
+      onClick={disabled ? (e) => e.preventDefault() : onClick}
+      href={href!}
+      target="_blank"
+    >
       {iconElement ?? <FontAwesomeIcon icon={icon!} />}&nbsp;{text}
     </a>
   )

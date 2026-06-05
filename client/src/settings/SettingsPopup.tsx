@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { Popup } from '../navigation/Popup'
 import { shallowEqualSubset } from '../utils/shallowEqual'
-import { settingsAtom } from './settings-atoms'
+import { localOnlySettingsAtom, settingsAtom } from './settings-atoms'
 import type { MobileValues, Theme } from './settings-types'
 import { defaultSettings, Settings } from './settings-types'
 
@@ -21,6 +21,7 @@ export function SettingsPopup({
 }) {
   const [settings, applySettings] = useAtom(settingsAtom)
   const [newSettings, setNewSettings] = useState<Settings>(settings)
+  const [localOnlySettings, setLocalOnlySettings] = useAtom(localOnlySettingsAtom)
 
   function updateSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
     setNewSettings((prev) => ({ ...prev, [key]: value }))
@@ -197,6 +198,23 @@ export function SettingsPopup({
             value={newSettings.saved ? 'Apply & Save' : 'Apply'}
             onClick={() => applySettings(newSettings)}
           />
+        </p>
+        <h2>Local Settings</h2>
+        <p>
+          <i>These settings are always preserved in the browser's local storage.</i>
+        </p>
+        <p>
+          <Switch
+            id="comparatorWarning"
+            onChange={() => {
+              setLocalOnlySettings({
+                ...localOnlySettings,
+                ignoreComparatorWarning: !localOnlySettings.ignoreComparatorWarning,
+              })
+            }}
+            checked={!!localOnlySettings.ignoreComparatorWarning}
+          />
+          <label htmlFor="comparatorWarning">Hide warnings about code from unknown sources</label>
         </p>
       </form>
     </Popup>

@@ -13,6 +13,20 @@ const settingsStoreAtom = atomWithStorage<PartialUserSettings>('lean4web:setting
   getOnInit: true,
 })
 
+interface PartialLocalOnlyUserSettings {
+  ignoreComparatorWarning?: boolean
+}
+
+/** Settings always stored on localstorage, never in the URL */
+export const localOnlySettingsAtom = atomWithStorage<PartialLocalOnlyUserSettings>(
+  'lean4web:local-settings',
+  {},
+  undefined,
+  {
+    getOnInit: true,
+  },
+)
+
 /** The settings which are set in the searchParams of the opened URL */
 const settingsUrlAtom = atom(
   (get) => {

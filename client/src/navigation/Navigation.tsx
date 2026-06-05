@@ -1,7 +1,13 @@
 import '../css/Modal.css'
 import '../css/Navigation.css'
 
-import { faArrowRotateRight, faCode, faInfoCircle, faEye } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowRotateRight,
+  faCode,
+  faEye,
+  faHandshake,
+  faInfoCircle,
+} from '@fortawesome/free-solid-svg-icons'
 import {
   faArrowUpRightFromSquare,
   faBars,
@@ -15,11 +21,12 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react'
 
 import { lean4webConfig } from '../../config'
 import ZulipIcon from '../assets/zulip.svg'
+import { useNavBar } from '../context/NavBarContext'
 import { codeAtom } from '../editor/code-atoms'
 import ImpressumPopup from '../Popups/Impressum'
 import LoadUrlPopup from '../Popups/LoadUrl'
@@ -30,11 +37,10 @@ import { mobileAtom } from '../settings/settings-atoms'
 import { SettingsPopup } from '../settings/SettingsPopup'
 import { setImportUrlAndProjectAtom } from '../store/import-atoms'
 import { currentProjectAtom, projectsAtom, visibleProjectsAtom } from '../store/project-atoms'
+import { urlArgsStableAtom } from '../store/url-atoms'
 import { save } from '../utils/SaveToFile'
 import { Dropdown } from './Dropdown'
 import { NavButton } from './NavButton'
-
-import { useNavBar } from '../context/NavBarContext'
 
 /** The menu items either appearing inside the dropdown or outside */
 function FlexibleMenu({
@@ -58,8 +64,12 @@ function FlexibleMenu({
   setLoadUrlOpen: Dispatch<SetStateAction<boolean>>
   setLoadZulipOpen: Dispatch<SetStateAction<boolean>>
 }) {
-  const [, setImportUrlAndProject] = useAtom(setImportUrlAndProjectAtom)
-  const [{ data: projects }] = useAtom(projectsAtom)
+  const setImportUrlAndProject = useSetAtom(setImportUrlAndProjectAtom)
+  const { data: projects } = useAtomValue(projectsAtom)
+  const urlArgs = useAtomValue(urlArgsStableAtom)
+  const code = useAtomValue(codeAtom)
+  const isUsingUrlCode = !!urlArgs?.url
+
   const loadFileFromDisk = (event: ChangeEvent<HTMLInputElement>) => {
     console.debug('Loading file from disk')
     const fileToLoad = event.target.files![0]
@@ -141,6 +151,21 @@ function FlexibleMenu({
           }}
         />
       </Dropdown>
+      <NavButton
+        icon={faHandshake}
+        text={'Can I Trust This Proof?'}
+        disabled={isUsingUrlCode}
+        title={
+          isUsingUrlCode
+            ? 'Example urls not supported by Comparator tool! Edit the text to enable.'
+            : (code ?? '').trim() === ''
+              ? 'Open the Comparator verification tool'
+              : 'Open this proof in the Comparator verification tool'
+        }
+        onClick={() => {
+          window.location.assign('https://comparator.live.lean-lang.org/' + window.location.hash)
+        }}
+      />
     </>
   )
 }

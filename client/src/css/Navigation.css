@@ -78,6 +78,10 @@ nav select {
   padding-bottom: 0.6rem;
 }
 
+nav .nav-link.disabled {
+  cursor: not-allowed;
+}
+
 /* Zulip logo (instead of font-awesome icon) */
 nav .nav-link svg {
   width: 1.4rem;
