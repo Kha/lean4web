@@ -21,6 +21,8 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
+import Popper from '@mui/material/Popper'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react'
 
@@ -33,14 +35,30 @@ import LoadUrlPopup from '../Popups/LoadUrl'
 import LoadZulipPopup from '../Popups/LoadZulip'
 import PrivacyPopup from '../Popups/PrivacyPolicy'
 import ToolsPopup from '../Popups/Tools'
-import { mobileAtom } from '../settings/settings-atoms'
+import { localOnlySettingsAtom, mobileAtom, settingsAtom } from '../settings/settings-atoms'
+import { lightThemes } from '../settings/settings-types'
 import { SettingsPopup } from '../settings/SettingsPopup'
 import { setImportUrlAndProjectAtom } from '../store/import-atoms'
 import { currentProjectAtom, projectsAtom, visibleProjectsAtom } from '../store/project-atoms'
 import { urlArgsStableAtom } from '../store/url-atoms'
+import { parseArgs } from '../store/url-converters'
 import { save } from '../utils/SaveToFile'
 import { Dropdown } from './Dropdown'
 import { NavButton } from './NavButton'
+
+const referrerNeedsComparator = (() => {
+  // Never highlight comparator option if there's no code
+  const args = parseArgs(window.location.hash)
+  if (!args.code?.trim() && !args.codez?.trim()) return false // No warning for empty code or example-url-driven code
+
+  // Highlight comparator if there's no referrer or if the referrer isn't safelisted
+  if (!document.referrer) return true
+  const referrer = new URL(document.referrer)
+  if (!lean4webConfig.comparatorSafeList) return true
+  return !lean4webConfig.comparatorSafeList.some((item) =>
+    item instanceof RegExp ? referrer.hostname.match(item) : referrer.hostname === item,
+  )
+})()
 
 /** The menu items either appearing inside the dropdown or outside */
 function FlexibleMenu({
@@ -69,6 +87,24 @@ function FlexibleMenu({
   const urlArgs = useAtomValue(urlArgsStableAtom)
   const code = useAtomValue(codeAtom)
   const isUsingUrlCode = !!urlArgs?.url
+
+  const settings = useAtomValue(settingsAtom)
+  const themeVariant = lightThemes.includes(settings.theme)
+    ? 'light'
+    : settings.theme === 'Cobalt'
+      ? 'cobalt'
+      : 'dark'
+  const [localOnlySettings, setLocalOnlySettings] = useAtom(localOnlySettingsAtom)
+  const [comparatorWarningDismissed, setComparatorWarningDismissed] = useState(false)
+  const comparatorWarningEligible =
+    !isInDropdown &&
+    !isUsingUrlCode &&
+    referrerNeedsComparator &&
+    !localOnlySettings.ignoreComparatorWarning
+  const [trustButtonEl, setTrustButtonEl] = useState<HTMLAnchorElement | null>(null)
+  const [trustArrowEl, setTrustArrowEl] = useState<HTMLElement | null>(null)
+  const comparatorWarningOpen =
+    !!trustButtonEl && comparatorWarningEligible && !comparatorWarningDismissed
 
   const loadFileFromDisk = (event: ChangeEvent<HTMLInputElement>) => {
     console.debug('Loading file from disk')
@@ -151,21 +187,66 @@ function FlexibleMenu({
           }}
         />
       </Dropdown>
-      <NavButton
-        icon={faHandshake}
-        text={'Can I Trust This Proof?'}
-        disabled={isUsingUrlCode}
-        title={
-          isUsingUrlCode
-            ? 'Example urls not supported by Comparator tool! Edit the text to enable.'
-            : (code ?? '').trim() === ''
-              ? 'Open the Comparator verification tool'
-              : 'Open this proof in the Comparator verification tool'
-        }
-        onClick={() => {
-          window.location.assign('https://comparator.live.lean-lang.org/' + window.location.hash)
-        }}
-      />
+      {lean4webConfig.comparator && (
+        <NavButton
+          ref={isInDropdown ? undefined : setTrustButtonEl}
+          icon={faHandshake}
+          text={'Can I Trust This Proof?'}
+          disabled={isUsingUrlCode}
+          title={
+            isUsingUrlCode
+              ? 'Example urls not supported by Comparator tool! Edit the text to enable.'
+              : (code ?? '').trim() === ''
+                ? 'Open the Comparator verification tool'
+                : 'Open this proof in the Comparator verification tool'
+          }
+          onClick={() => {
+            window.location.assign(lean4webConfig.comparator + window.location.hash)
+          }}
+        />
+      )}
+      <Popper
+        open={comparatorWarningOpen}
+        anchorEl={trustButtonEl}
+        placement="bottom-end"
+        modifiers={[
+          { name: 'flip', enabled: false },
+          { name: 'offset', options: { offset: [0, 12] } },
+          { name: 'arrow', enabled: true, options: { element: trustArrowEl, padding: 8 } },
+        ]}
+      >
+        <ClickAwayListener onClickAway={() => setComparatorWarningDismissed(true)}>
+          <div
+            className={`comparator-warning ${themeVariant}`}
+            role="status"
+            aria-label="Verify untrusted proofs with Comparator"
+          >
+            <span className="comparator-warning-arrow" ref={setTrustArrowEl}></span>
+            <button
+              className="codicon codicon-close comparator-warning-close"
+              aria-label="Dismiss"
+              onClick={() => setComparatorWarningDismissed(true)}
+            />
+            <p>
+              Don't trust proofs from untrusted sources unless they're validated against a trusted
+              challenge. Use the <strong>Can I Trust This Proof?</strong> button to check this proof
+              with the online version of Lean's Comparator tool.
+            </p>
+            <button
+              className="comparator-warning-perma-dismiss"
+              onClick={() => {
+                setComparatorWarningDismissed(true)
+                setLocalOnlySettings({
+                  ...localOnlySettings,
+                  ignoreComparatorWarning: true,
+                })
+              }}
+            >
+              Don't show this again
+            </button>
+          </div>
+        </ClickAwayListener>
+      </Popper>
     </>
   )
 }
@@ -276,7 +357,13 @@ export function Menu({
           }}
         />
         <NavButton icon={faHammer} text="Lean Info" onClick={() => setToolsOpen(true)} />
-        { navbar.requiresNavBar != 0 && <NavButton icon={faEye} text={`${navbar.hideNavBar ? "Show" : "Hide"} Navbar`} onClick={() => navbar.setHideNavBar(!navbar.hideNavBar)} />}
+        {navbar.requiresNavBar != 0 && (
+          <NavButton
+            icon={faEye}
+            text={`${navbar.hideNavBar ? 'Show' : 'Hide'} Navbar`}
+            onClick={() => navbar.setHideNavBar(!navbar.hideNavBar)}
+          />
+        )}
         <NavButton icon={faArrowRotateRight} text="Restart server" onClick={restart} />
         <NavButton
           icon={faDownload}
