@@ -18,7 +18,7 @@ export type LeanWebConfig = {
    * (example: `"https://comparator.live.lean-lang.org/"`)
    */
   comparator: string | null
-  /** URLs to safelist so that they do not prompt a popup highlighting the "Can I Trust This Proof?" button.
+  /** URLs to safelist so that refer links do not prompt a popup highlighting the "Can I Trust This Proof?" button.
    * Ignored if `comparator` option is `null`.
    */
   comparatorSafeList: (string | RegExp)[] | null
