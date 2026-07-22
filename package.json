@@ -29,7 +29,8 @@
     "test:prod:windows": "concurrently -k -s first -n server,cypress -c blue,cyan \"npm run build && PORT=3000 npm run production\" \"npm run test:prod:windows:bare\" --hide server"
   },
   "dependencies": {
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
@@ -42,7 +43,6 @@
     "globals": "^16.5.0",
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
-    "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1",
     "wait-on": "^9.0.3"
   },
