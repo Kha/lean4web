@@ -2,7 +2,7 @@ import { LeanWebConfig } from './src/api/config-types'
 import * as React from 'react'
 
 export const lean4webConfig: LeanWebConfig = {
-  serverCountry: 'Germany',
+  serverCountry: 'Finland',
   contactDetails: null,
   impressum: null,
   comparator: 'https://comparator.live.lean-lang.org/',
